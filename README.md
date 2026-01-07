@@ -32,6 +32,11 @@ channels. Circuit construction with a total of 8 channels.
 
 ## Links/URLs/Credits
 [github.com](https://github.com/nRF24/RF24) - Optimized High Speed Driver for nRF24L01(+) 2.4GHz Wireless Transceiver  
+[az-delivery.com](https://www.az-delivery.de/en/blogs/azdelivery-blog-fur-arduino-und-raspberry-pi/fernsteuerung-mit-nrf24l01-2-4ghz?srsltid=AfmBOopVb1ggx3nHFOl5azNovtoBIxrMbZt_xDhekK2iuie3P19_x3D0) - Fernsteuerung mit nRF24L01 (2,4 GHz)  
+[instructables.com](https://www.instructables.com/RC-Transmitter-Using-NRF24L01-Radio-Module-Arduino/) - RC Transmitter Using NRF24L01 Radio Module & Arduino  
+[howtomechatronics.com](https://howtomechatronics.com/tutorials/arduino/arduino-wireless-communication-nrf24l01-tutorial/) - nRF24L01 – How It Works, Arduino Interface, Circuits, Codes  
+
+
 ## Version
 The option to create releases on GitHub is pretty nice. I really do like it
 since it give me easy access to all the files without git cloning the complete
