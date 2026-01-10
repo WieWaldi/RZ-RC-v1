@@ -36,6 +36,11 @@ channels. Circuit construction with a total of 8 channels.
 [instructables.com](https://www.instructables.com/RC-Transmitter-Using-NRF24L01-Radio-Module-Arduino/) - RC Transmitter Using NRF24L01 Radio Module & Arduino  
 [howtomechatronics.com](https://howtomechatronics.com/tutorials/arduino/arduino-wireless-communication-nrf24l01-tutorial/) - nRF24L01 – How It Works, Arduino Interface, Circuits, Codes  
 
+[makerblog.at](https://www.makerblog.at/2025/02/arduino-projekt-oled-display-mit-bme280-raumklima-messung/) - Arduino-Projekt: OLED-Display mit BME280 für Raumklima-Messung  
+[youtube.com](https://www.youtube.com/watch?v=kr3ikuN5vjo) - OLED display & BME280 sensor on Arduino with I²C - Tutorial  
+
+[youtube.com](https://www.youtube.com/watch?v=HVHVkKt-ldc&list=PLjQRaMdk7pBZ1UV3IL5ol8Qc7R9k-kwXA) - Arduino + OLED Displays - Playlist  
+
 
 ## Version
 The option to create releases on GitHub is pretty nice. I really do like it
