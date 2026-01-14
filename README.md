@@ -43,6 +43,10 @@ channels. Circuit construction with a total of 8 channels.
 
 [instructables.com](https://www.instructables.com/Improved-Arduino-Rotary-Encoder-Reading/) - Improved Arduino Rotary Encoder Reading  
 [done.land](https://done.land/components/humaninterface/rotaryencoder/usingmechanicalrotaryencoder/) - Using Mechanical Rotary Encoder  
+[lastminuteengineers.com](https://lastminuteengineers.com/arduino-nano-pinout/) - Arduino Nano Pinout, Features & Datasheet  
+[thesolaruniverse.wordpress.com](https://thesolaruniverse.wordpress.com/2023/08/01/arduino-nano-and-the-circular-gca901-240240-pixel-tft-display/) - Arduino Nano and the Circular GCA901 240x240 Pixel TFT Display  
+
+
 
 ## Version
 The option to create releases on GitHub is pretty nice. I really do like it
