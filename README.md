@@ -41,8 +41,8 @@ channels. Circuit construction with a total of 8 channels.
 
 [youtube.com](https://www.youtube.com/watch?v=HVHVkKt-ldc&list=PLjQRaMdk7pBZ1UV3IL5ol8Qc7R9k-kwXA) - Arduino + OLED Displays - Playlist  
 
-[instructables.com](https://www.instructables.com/Improved-Arduino-Rotary-Encoder-Reading/) - Improved Arduino Rotary Encoder Reading
-[done.land](https://done.land/components/humaninterface/rotaryencoder/usingmechanicalrotaryencoder/) - Using Mechanical Rotary Encoder
+[instructables.com](https://www.instructables.com/Improved-Arduino-Rotary-Encoder-Reading/) - Improved Arduino Rotary Encoder Reading  
+[done.land](https://done.land/components/humaninterface/rotaryencoder/usingmechanicalrotaryencoder/) - Using Mechanical Rotary Encoder  
 
 ## Version
 The option to create releases on GitHub is pretty nice. I really do like it
