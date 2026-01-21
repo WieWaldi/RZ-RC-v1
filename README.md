@@ -45,6 +45,7 @@ channels. Circuit construction with a total of 8 channels.
 [done.land](https://done.land/components/humaninterface/rotaryencoder/usingmechanicalrotaryencoder/) - Using Mechanical Rotary Encoder  
 [lastminuteengineers.com](https://lastminuteengineers.com/arduino-nano-pinout/) - Arduino Nano Pinout, Features & Datasheet  
 [thesolaruniverse.wordpress.com](https://thesolaruniverse.wordpress.com/2023/08/01/arduino-nano-and-the-circular-gca901-240240-pixel-tft-display/) - Arduino Nano and the Circular GCA901 240x240 Pixel TFT Display  
+[wokwi.com](https://wokwi.com/projects/323967017900048980) - OLED display simple none blocking menu System - i2c version SSD1306 - 30mar22  
 
 
 
