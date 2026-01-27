@@ -44,8 +44,6 @@
                                                                                 // On an arduino Nano:      A4(SDA), A5(SCL),
         // Misc settings
         boolean debug                           = true;                        // Debugging on/off
-        boolean serialDebug                     = false;                        // Serial debugging on/off
-        const int iLED                          = 2;                            // onboard indicator led gpio pin
         const int menuTimeout                   = 10;                           // menu inactivity timeout (seconds)
         const int topLine                       = 12;                           // y position of lower area of the display (18 with two colour displays)
         #define IntervalScreenUpdate              250                           // Screen update interval in milliseconds
@@ -62,23 +60,30 @@
         #define DIRECTION_L                       1                             // left turn
         
         // define state variables
-        volatile int rotaryCLKstate             = LOW;                          // current state of CLK pin
-        volatile int rotaryPrevCLKstate         = LOW;                          // previous state of CLK pin
-        volatile int rotaryCounter              = 0;                            // counter for rotary encoder
-        volatile int rotaryPosition             = 0;                            // current position of rotary encoder
-        volatile int rotaryDirection            = DIRECTION_R;                  // current direction of rotary encoder start with right
+        int rotaryCLKstate             = LOW;                          // current state of CLK pin
+        int rotaryPrevCLKstate         = LOW;                          // previous state of CLK pin
+        int rotaryCounter              = 0;                            // counter for rotary encoder
+        int rotaryPosition             = 0;                            // current position of rotary encoder
+        int rotaryDirection            = DIRECTION_R;                  // current direction of rotary encoder start with right
         
-        volatile int rotaryPrevButtonState      = 0;                            // previous state of BUTTON pin
-        volatile int rotaryButtonState          = 0;                            // current state of BUTTON pin
+        int rotaryPrevButtonState      = 0;                            // previous state of BUTTON pin
+        int rotaryButtonState          = 0;                            // current state of BUTTON pin
+        bool rotaryButtonPressed       = false;                        // flag set when button is pressed
         
-        volatile uint32_t lastUpdateScreen      = 0;                            // last screen update time
-
-        volatile int ValForChannel1             = 0;                            // Value for Channel 1
-        volatile int ValForChannel2             = 0;                            // Value for Channel 2
-        volatile int ValForChannel3             = 0;                            // Value for Channel 3
-        volatile int ValForChannel4             = 0;                            // Value for Channel 4
-        volatile int ValForAux1                 = 0;                            // Value for Aux 1
-        volatile int ValForAux2                 = 0;                            // Value for Aux 2
+        uint32_t lastUpdateScreen      = 0;                            // last screen update time
+        int ValForChannel1             = 0;                            // Value for Channel 1
+        int ValForChannel2             = 0;                            // Value for Channel 2
+        int ValForChannel3             = 0;                            // Value for Channel 3
+        int ValForChannel4             = 0;                            // Value for Channel 4
+        int ValForAux1                 = 0;                            // Value for Aux 1
+        int ValForAux2                 = 0;                            // Value for Aux 2
+    int availableMemory() {
+      int size = 2048;
+      byte *buf;
+      while ((buf = (byte *)malloc(--size)) == NULL);
+      free(buf);
+      return size;
+    }
 // -----------------------------------------------------------------------------
 
 
@@ -99,16 +104,16 @@ MenuMode menuMode = menu;                                                       
 
 
 // Forward declarations of functions
-void bootScreen();
-void debugSerialOutput();
-void drawCanvas();
-void drawChannelInfo(int channelNumber, int y, int ValForChannel);
-void drawFrame();
-void menuReset();
-void readAnalogValues();
-void readRotaryEncoder();
-void serviceScreen();
-void updateScreen();
+// void bootScreen();
+// void debugSerialOutput();
+// void drawCanvas();
+// void drawChannelInfo(int channelNumber, int y, int ValForChannel);
+// void drawFrame();
+// void menuReset();
+// void readAnalogValues();
+// void readRotaryEncoder();
+// void serviceScreen();
+// void updateScreen();
 
 
 void debugSerialOutput() {
@@ -116,22 +121,24 @@ void debugSerialOutput() {
     every(IntervalDebug)  {                                                     // Output debug information at defined interval
       // If rotary encoder has moved or button state has changed, print debug info
       // if (rotaryCLKstate != rotaryPrevCLKstate || rotaryButtonState != rotaryPrevButtonState) {
-        Serial.println("\n\n-- Debug Information -- ");
-        Serial.print("Direction:");
+        Serial.println(F("\n\n-- Debug Information -- "));
+        Serial.print(F("Direction:"));
         Serial.println(rotaryDirection);
-        Serial.print("Position: ");
+        Serial.print(F("Position: "));
         Serial.println(rotaryPosition);
-        Serial.print("Rotary CLK State:");
+        Serial.print(F("Rotary CLK State:"));
         Serial.println(rotaryCLKstate);
-        Serial.print("Previous Rotary CLK State:");
+        Serial.print(F("Previous Rotary CLK State:"));
         Serial.println(rotaryPrevCLKstate);
-        Serial.print("Rotary Button State:");
+        Serial.print(F("Rotary Button State:"));
         Serial.println(rotaryButtonState);
-        Serial.print("Previous Rotary Button State:");
+        Serial.print(F("Previous Rotary Button State:"));
         Serial.println(rotaryPrevButtonState);
-        Serial.print("Ch1:");
+        Serial.print(F("menuMode:"));
+        Serial.println(menuMode);
+        Serial.print(F("Ch1:"));
         Serial.println(ValForChannel1);
-        Serial.print("Ch2:");
+        Serial.print(F("Ch2:"));
         Serial.println(ValForChannel2);
         Serial.println("-- Debug Information -- ");
       // }
@@ -149,15 +156,15 @@ void drawCanvas() {                                                             
   display.drawRect(0, 0, 128, 64, SSD1306_WHITE);                            // Draw outer rectangle 
   display.setTextSize(1);                                                       // Text size 1
   display.setCursor(5, 2);                                                   // Cursorposition x, y  
-  display.println("RZ-RC-v1 Transmitter");  
+  display.println(F("RZ-RC-v1 Transmitter"));  
   display.drawFastHLine(0,10,128,SSD1306_WHITE);                           // Draw horizontal line
 }
 
 void drawChannelInfo(int channelNumber, int y, int ValForChannel) {             // Channel Number, y Position, Value for Channel
   display.setCursor(2, y);                                                      //Cursorposition x, y
-  display.print("Ch ");
+  display.print(F("Ch "));
   display.print(channelNumber);
-  display.print(":");
+  display.print(F(":"));
   display.setCursor(31, y);
   display.print(ValForChannel);
   display.drawRect(50, y, 74, 6, SSD1306_WHITE);                                // Draw rectangle for bar
@@ -203,11 +210,27 @@ void readRotaryEncoder() {
   }
   rotaryPrevCLKstate = rotaryCLKstate;                                          // Store current state as previous state for next loop
 
-  if (digitalRead(SW_PIN) == LOW) {                                     // Read the current state of BUTTON
-    rotaryButtonState = 1;                                                      // Button is PRESSED
-  } else {
-    rotaryButtonState = 0;                                                      // Button is RELEASED
+  rotaryButtonState = digitalRead(SW_PIN);
+  if (rotaryButtonState != rotaryPrevButtonState) {                             // Has the button state changed?
+    if (rotaryButtonState == 0) {
+      rotaryButtonPressed = false;                                               // Set button pressed flag
+      // Serial.println("The button is RELEASED.");
+      // Serial.println(rotaryButtonState);
+    } else {
+      rotaryButtonPressed = true;                                               // Set button pressed flag
+      // Serial.println("The button is PRESSED.");
+      // Serial.println(rotaryButtonState);
+      // rotaryPrevButtonState = rotaryButtonState;                                    // Store current state as previous state for next loop
+    }
   }
+
+
+
+  // if (digitalRead(SW_PIN) == LOW) {                                     // Read the current state of BUTTON
+  //   rotaryButtonState = 1;                                                      // Button is PRESSED
+  // } else {
+  //   rotaryButtonState = 0;                                                      // Button is RELEASED
+  // }
   // if (rotaryButtonState != rotaryPrevButtonState) {                             // Has the button state changed?
   //   if (rotaryButtonState == 0) {
   //     Serial.println("The button is RELEASED.");
@@ -239,7 +262,7 @@ void updateScreen(){
         display.setTextColor(WHITE);                                          // Normal text color
       }
       display.setCursor(20, topLine);                                                   // Cursorposition x, y
-      display.println("Screen Off");
+      display.println(F("Screen Off"));
 
       if (rotaryCounter == 1) {
         display.setTextColor(BLACK,WHITE);                                          // Normal text color
@@ -247,7 +270,7 @@ void updateScreen(){
         display.setTextColor(WHITE);                                          // Normal text color
       }
       display.setCursor(20, topLine + 8);                                                   // Cursorposition x, y
-      display.println("Channel Info");
+      display.println(F("Channel Info"));
 
       if (rotaryCounter == 2) {
         display.setTextColor(BLACK,WHITE);                                          // Normal text color
@@ -255,7 +278,7 @@ void updateScreen(){
         display.setTextColor(WHITE);                                          // Normal text color
       }
       display.setCursor(20, topLine + 16);                                                   // Cursorposition x, y
-      display.println("Aux Info");
+      display.println(F("Aux Info"));
 
       if (rotaryCounter == 3) {
         display.setTextColor(BLACK,WHITE);                                          // Normal text color
@@ -263,13 +286,13 @@ void updateScreen(){
         display.setTextColor(WHITE);                                          // Normal text color
       }
       display.setCursor(20, topLine + 24);                                                   // Cursorposition x, y
-      display.println("Settings");
+      display.println(F("Settings"));
 
       display.setTextColor(WHITE);                                          // Normal text color
       display.setCursor(3, 55);                                                   // Cursorposition x, y
-      display.print("Rotary:");
+      display.print(F("Rotary:"));
       display.print(rotaryPosition);
-      display.print("  B:");
+      display.print(F("  B:"));
       display.print(rotaryButtonState);
       break;
     case channelInfo:
@@ -292,14 +315,18 @@ void updateScreen(){
 }
 
 void serviceScreen() {
-  if (rotaryPosition == 0 && rotaryButtonState == 1) {
+  if (rotaryPosition == 0 && rotaryButtonState == 0) {
     menuMode = off;
-  } else if (rotaryPosition == 1 && rotaryButtonState == 1) {
+    // Serial.println("Screen Off");
+  } else if (rotaryPosition == 1 && rotaryButtonState == 0) {
     menuMode = channelInfo;
-  } else if (rotaryPosition == 2 && rotaryButtonState == 1) {
+    // Serial.println("Channel Info");
+  } else if (rotaryPosition == 2 && rotaryButtonState == 0) {
     menuMode = auxInfo;
-  } else if (rotaryPosition == 3 && rotaryButtonState == 1) {
+    // Serial.println("Aux Info");
+  } else if (rotaryPosition == 3 && rotaryButtonState == 0) {
     menuMode = settings;
+    // Serial.println("Settings");
   }
 
   if (menuMode == off && rotaryButtonState == 1) {
@@ -314,16 +341,18 @@ void serviceScreen() {
 }
 
 void menuReset() {
-  rotaryCounter = 0;
-  rotaryPosition = 0;
-  menuMode = menu;
+  display.clearDisplay();                                                       // Clear the buffer
+  drawFrame();
+  display.setCursor(10, 20);                                                    // Cursorposition x, y
+  display.println(F("RZ-RC-v1"));
+  display.display();
+  menuMode = off;
 }
 
 void bootScreen(){
   display.clearDisplay();                                                       // Clear the buffer
-  // display.setTextSize(2);                                                       // Text size 2
   display.setCursor(10, 20);                                                    // Cursorposition x, y
-  display.println("RZ-RC-v1");
+  display.println(F("RZ-RC-v1"));
   display.drawRect(0, 0, 128, 64, SSD1306_WHITE);                               // Draw outer rectangle  
   display.drawRect(15, 30, 100, 20, SSD1306_WHITE);                             // Draw inner rectangle
   display.display();
@@ -339,10 +368,12 @@ void bootScreen(){
 // --------------------- void setup() ------------------------------------------
 void setup() {
   Serial.begin(115200);
-  Serial.println("RZ-RC-v1 Transmitter");
-  Serial.println("Initializing Screen");
+  Serial.println(F("RZ-RC-v1 Transmitter"));
+  Serial.println(F("Initializing Screen"));
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("Keinen SSD1306 Verbindung gefunden"));
+    Serial.println(F("No SSD1306 found."));
+    Serial.print(F("Available Memory: "));
+    Serial.print(availableMemory());
     while (1) {
       delay(100);
     }
@@ -359,17 +390,17 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);                                          // Put white text
   display.cp437(true);                                                          // Use full 256 char 'Code Page 437' font
   display.setCursor(5, 0);                                                      // Cursorposition x, y
-  display.print("RZ-RC-v1");
+  display.print(F("RZ-RC-v1"));
   display.setTextSize(1);                                                       // Text size 1
   display.setCursor(0, 30);                                                     // Cursorposition x, y
-  display.println("-- Transmitter --");
-  display.print("Debug:");
+  display.println(F("-- Transmitter --"));
+  display.print(F("Debug:"));
   display.println( (debug ? "ON" : "OFF") );
-  Serial.println("-- Transmitter --");
-  Serial.print("Debug:");
+  Serial.println(F("-- Transmitter --"));
+  Serial.print(F("Debug:"));
   Serial.println( (debug ? "ON" : "OFF") );
   display.println("Setup finished");
-  Serial.println("Setup finished");
+  Serial.println(F("Setup finished"));
   display.display();
   bootScreen();
 }
