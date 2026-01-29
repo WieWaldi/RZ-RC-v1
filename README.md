@@ -25,10 +25,22 @@ channels. Circuit construction with a total of 8 channels.
 [github.com](https://github.com/Aecert-Robotics/Arduino-RC-Transmitter) - Arduino-RC-Transmitter  
 
 ## Partlist
- - 2 x Arduino Nano  
+These are the main parts used in this project example:
+### Transmitter Arduino Nano
+ - 2 x Arduino Nano  (Transmitter + Receiver)
+ - 1 x OLED 128x64 I2C Display
  - 1 x NRF24L01+PA+LN 100mW (E01-ML01DP5)  
  - 1 x nRF24L01P Wireless RF Transmitter Remote Control 2.4GHz Module E01-2G4M27D 27dBm 5KM DIP PA LNA IoT Smart Home Sensors Headset  
  - 2 x 2 x NRF24 wireless 3.3v adaptor: [aliexpress.com](https://s.click.aliexpress.com/e/_DlmATh1) 
+ - 2 x Two axis analog joystick modules
+### Transmitter Arduino MEGA
+ - 1 x Arduino MEGA 2560 (Transmitter)
+ - 1 x Hailege 2,08" OLED-Display, SH1122 256x64, SPI, 16 Grayscales
+ - 1 x Arduino Nano  (Receiver)
+ - 1 x NRF24L01+PA+LN 100mW (E01-ML01DP5)  
+ - 1 x nRF24L01P Wireless RF Transmitter Remote Control 2.4GHz Module E01-2G4M27D 27dBm 5KM DIP PA LNA IoT Smart Home Sensors Headset  
+ - 2 x 2 x NRF24 wireless 3.3v adaptor: [aliexpress.com](https://s.click.aliexpress.com/e/_DlmATh1) 
+ - 2 x Two axis analog joystick modules
 
 ## Links/URLs/Credits
 [github.com](https://github.com/nRF24/RF24) - Optimized High Speed Driver for nRF24L01(+) 2.4GHz Wireless Transceiver  
