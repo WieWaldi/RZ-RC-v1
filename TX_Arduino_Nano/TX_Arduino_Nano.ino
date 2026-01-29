@@ -42,8 +42,10 @@
                                                                                 // On an arduino MEGA 2560: 20(SDA), 21(SCL)
                                                                                 // On an arduino LEONARDO:   2(SDA),  3(SCL),
                                                                                 // On an arduino Nano:      A4(SDA), A5(SCL),
+        Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);       // Create display object
+
         // Misc settings
-        boolean debug                           = true;                        // Debugging on/off
+        const boolean debug                     = true;                        // Debugging on/off
         const int menuTimeout                   = 10;                           // menu inactivity timeout (seconds)
         const int topLine                       = 12;                           // y position of lower area of the display (18 with two colour displays)
         #define IntervalScreenUpdate              250                           // Screen update interval in milliseconds
@@ -60,34 +62,36 @@
         #define DIRECTION_L                       1                             // left turn
         
         // define state variables
-        int rotaryCLKstate             = LOW;                          // current state of CLK pin
-        int rotaryPrevCLKstate         = LOW;                          // previous state of CLK pin
-        int rotaryCounter              = 0;                            // counter for rotary encoder
-        int rotaryPosition             = 0;                            // current position of rotary encoder
-        int rotaryDirection            = DIRECTION_R;                  // current direction of rotary encoder start with right
+        int rotaryCLKstate                      = LOW;                          // current state of CLK pin
+        int rotaryPrevCLKstate                  = LOW;                          // previous state of CLK pin
+        int rotaryCounter                       = 0;                            // counter for rotary encoder
+        int rotaryPosition                      = 0;                            // current position of rotary encoder
+        int rotaryDirection                     = DIRECTION_R;                  // current direction of rotary encoder start with right
         
-        int rotaryPrevButtonState      = 0;                            // previous state of BUTTON pin
-        int rotaryButtonState          = 0;                            // current state of BUTTON pin
-        bool rotaryButtonPressed       = false;                        // flag set when button is pressed
+        int rotaryPrevButtonState               = 0;                            // previous state of BUTTON pin
+        int rotaryButtonState                   = 1;                            // current state of BUTTON pin
+        bool rotaryButtonPressed                = false;                        // flag set when button is pressed
+        bool rotaryButtonReleased               = true;                         // flag set when button is released
+        bool rotaryButtonSignal                 = false;                         // flag for button signal
         
-        uint32_t lastUpdateScreen      = 0;                            // last screen update time
-        int ValForChannel1             = 0;                            // Value for Channel 1
-        int ValForChannel2             = 0;                            // Value for Channel 2
-        int ValForChannel3             = 0;                            // Value for Channel 3
-        int ValForChannel4             = 0;                            // Value for Channel 4
-        int ValForAux1                 = 0;                            // Value for Aux 1
-        int ValForAux2                 = 0;                            // Value for Aux 2
-    int availableMemory() {
-      int size = 2048;
-      byte *buf;
-      while ((buf = (byte *)malloc(--size)) == NULL);
-      free(buf);
-      return size;
-    }
+        uint32_t lastUpdateScreen               = 0;                            // last screen update time
+        int ValForChannel1                      = 0;                            // Value for Channel 1
+        int ValForChannel2                      = 0;                            // Value for Channel 2
+        int ValForChannel3                      = 0;                            // Value for Channel 3
+        int ValForChannel4                      = 0;                            // Value for Channel 4
+        int ValForAux1                          = 0;                            // Value for Aux 1
+        int ValForAux2                          = 0;                            // Value for Aux 2
+
+        int availableMemory() {                                                 // Function to check available memory  
+          int size = 2048;
+          byte *buf;
+          while ((buf = (byte *)malloc(--size)) == NULL);
+          free(buf);
+          return size;
+        }
 // -----------------------------------------------------------------------------
 
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);       // Create display object
 
 
 // Modes that the program can be in
@@ -134,6 +138,12 @@ void debugSerialOutput() {
         Serial.println(rotaryButtonState);
         Serial.print(F("Previous Rotary Button State:"));
         Serial.println(rotaryPrevButtonState);
+        Serial.print(F("rotaryButtonPressed:"));
+        Serial.println(rotaryButtonPressed);
+        Serial.print(F("rotaryButtonReleased:"));
+        Serial.println(rotaryButtonReleased);
+        Serial.print(F("rotaryButtonSignal:"));
+        Serial.println(rotaryButtonSignal);
         Serial.print(F("menuMode:"));
         Serial.println(menuMode);
         Serial.print(F("Ch1:"));
@@ -213,14 +223,17 @@ void readRotaryEncoder() {
   rotaryButtonState = digitalRead(SW_PIN);
   if (rotaryButtonState != rotaryPrevButtonState) {                             // Has the button state changed?
     if (rotaryButtonState == 0) {
-      rotaryButtonPressed = false;                                               // Set button pressed flag
-      // Serial.println("The button is RELEASED.");
-      // Serial.println(rotaryButtonState);
-    } else {
       rotaryButtonPressed = true;                                               // Set button pressed flag
-      // Serial.println("The button is PRESSED.");
-      // Serial.println(rotaryButtonState);
-      // rotaryPrevButtonState = rotaryButtonState;                                    // Store current state as previous state for next loop
+      rotaryButtonReleased = false;                                               // Set button pressed flag
+      Serial.println("The button is PRESSED.");
+    } else {
+      rotaryButtonPressed = false;                                               // Set button pressed flag
+      rotaryButtonReleased = true;                                               // Set button pressed flag
+      Serial.println("The button is RELEASED.");
+    }
+    rotaryPrevButtonState = rotaryButtonState;                                    // Store current state as previous state for next loop
+    if (rotaryButtonPressed) {
+      rotaryButtonSignal = true;
     }
   }
 
@@ -329,7 +342,7 @@ void serviceScreen() {
     // Serial.println("Settings");
   }
 
-  if (menuMode == off && rotaryButtonState == 1) {
+  if (menuMode == off && rotaryButtonSignal == true) {
     menuMode = menu;
   } else if (menuMode == channelInfo && rotaryButtonState == 1) {
     menuMode = menu;
@@ -362,7 +375,6 @@ void bootScreen(){
     display.display();
     i = i + 4;
   }
-  delay(2000);
 }
 
 // --------------------- void setup() ------------------------------------------
